@@ -14,9 +14,9 @@ PImage fitToScreen(PImage img) {
 }
 
 void loadImages() {
-  phase1Image = fitToScreen(loadImage("img/phase1.jpg"));
-  phase2Image = fitToScreen(loadImage("img/phase2.jpg"));
-  phase3Image = fitToScreen(loadImage("img/phase3.jpg"));
+  phase1Image = fitToScreen(loadImage("img/set"+curSet+"-1.jpg"));
+  phase2Image = fitToScreen(loadImage("img/set"+curSet+"-2.jpg"));
+  phase3Image = fitToScreen(loadImage("img/set"+curSet+"-3.jpg"));
 }
 
 void phaseWrap() {

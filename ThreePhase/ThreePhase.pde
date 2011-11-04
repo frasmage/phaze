@@ -9,9 +9,13 @@ color[][] colors;
 int[][] names;
 
 boolean update, exportMesh, exportCloud;
+int curSet =8;
+float[] zscales = {108,32,88,98,98,180,120,48,108};
+float[] zskews = {28,49,28.5,35,35,34,27,30,26};
+float[] noises = {.01,.07,.1,.1,.1,.15,0,.03,0};
 
 void setup() {
-  size(480, 640, P3D);
+  size(480, 720, P3D);
   
   loadImages();
   inputWidth = phase1Image.width;
