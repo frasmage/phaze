@@ -20,16 +20,16 @@ import peasy.*;
  can be reconstructed or not. Start with it small, and work
  up until you start losing important parts of the image.
  */
-float zscale = 20;
-float zskew = 20;
-float noiseTolerance = 0.20;
+float zscale = 120;
+float zskew = 22;
+float noiseTolerance = 0.10;
 float xr = 0;
 float yr = 0;
 char[] words = {
   'c','u','l','t','u','r','e'
 };
 String[][] imageList = new String[10][3];
-int curSet = 4; //current Image set to load
+int curSet = 5; //current Image set to load
 
 int inputWidth = 480;
 int inputHeight = 720;
