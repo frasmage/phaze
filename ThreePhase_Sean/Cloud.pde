@@ -6,7 +6,6 @@ class Cloud {
   public float noiseThreshold;
   public float zscale;
   public float zskew; 
-  public int renderDetail = 2;
 
   int inputWidth, inputHeight;
   float[][] phase, distance, depth;
