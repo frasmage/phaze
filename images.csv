@@ -1,0 +1,10 @@
+SETNAME,DESCRIPTION,ZSCALE,ZSKEW,NOISE
+set0, Sean /w shirt,108,28,.01
+set1, Sean profile,32,49,.07
+set2, Sean hands,88,28.5,.10
+set3, Sean side,98,35,.10
+set4, Stef front,98,35,.10
+set5, Stef straight,180,34,.15
+set6, Stef pensive,120,27,0
+set7, Stef over shoulder,48,30,.03
+set8, Stef side,108,26,0
