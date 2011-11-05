@@ -12,9 +12,9 @@ PeasyCam cam;
 
 //handlers for faces
 int setLim = 9; //number of image sets, max index+1
-Cloud[] faces = new Cloud[setLim]; //face Objects, contains 3d pixel clouds
+ThreePhaseCloud[] faces = new ThreePhaseCloud[setLim]; //face Objects, contains 3d pixel clouds
 int curSet =0; //currently selected index
-Cloud currentFace; //handler for currently selected object
+ThreePhaseCloud currentFace; //handler for currently selected object
 
 //holders for transition animation
 float[][] targetDepth;
@@ -27,13 +27,16 @@ color[][] pastColor;
 
 
 
-//array of predetermined values, should have setLim values, 
+//array of predetermined values, should have setLim # of values, 
 //see kyle's version to guess and check good values for your set
 float[] zscales = {108,32,88,98,98,180,120,48,108};
 float[] zskews = {28,49,28.5,35,35,34,27,30,26};
 float[] noises = {.01,.07,.1,.1,.1,.15,0,.03,0};
 
 //temp image objects to be used for processing
+//image files must be in /img folder and 
+//be named set#-1.jpg, set#-2.jpg and set#-3.jpg,
+//where # is the set ID and 1,2,3 is the order of the images in sequence
 PImage phase1Image, phase2Image, phase3Image;
 
 
@@ -48,17 +51,21 @@ void setup() {
   
   //instantiate facial clouds
   for(int i =0;i<faces.length;i++) {
-    faces[i] = new Cloud(i,zscales[i],zskews[i],noises[i]);
+    faces[i] = new ThreePhaseCloud(i,zscales[i],zskews[i],noises[i]);
   }
   currentFace = faces[curSet]; //set to default
-  currentDepth = pastDepth = targetDepth = faces[curSet].depth;
-  currentColor = pastColor = targetColor = faces[curSet].colors;
+  
+  //set global depth and color calculators to default
+  pastDepth = targetDepth = faces[curSet].depth; //set to default
+  currentDepth = new float[faces[curSet].inputHeight][faces[curSet].inputHeight];
+  currentDepth = faces[curSet].duplicateDepthArray(); //make a new array which is duplicate of default
+  pastColor = targetColor = faces[curSet].colors; //set to default
+  currentColor = faces[curSet].duplicateColorArray(); //make a new array which is duplicate of default
   
   //now that we are done with them, empty the image containers from memory
   phase1Image = null;
   phase2Image = null;
   phase3Image = null;
-  
 }
 
 void draw () {
@@ -93,11 +100,13 @@ void keyPressed() {
   //if key pressed is between 1 and setLim
   for(int i =0; i<setLim;i++) {
     if(key == char(49+i)) {
-      //set current face to number key pressed
-      curSet = i;
-      currentFace = faces[curSet];
-      targetDepth = faces[curSet].depth;
-      targetColor = faces[curSet].colors;
+      if(i!=curSet){
+        //set current face to number key pressed
+        curSet = i;
+        currentFace = faces[curSet];
+        targetDepth = faces[curSet].depth;
+        targetColor = faces[curSet].colors;
+      }
     }
   }
 }
@@ -114,7 +123,7 @@ color mergeColors(color current, color target){
   float valr = ((tr-cr)*speed);
   float valg = ((tg-cg)*speed);
   float valb = ((tb-cb)*speed);
-  //make sure values are integers and make a change
+  //make sure are great enough to change 
   if(valr > 0 && valr < 1){
     valr = 1;
   }else if(valr < 0 && valr > -1){
