@@ -15,6 +15,7 @@ PeasyCam cam;
 //                  GLOBAL VARS
 // ------------------------------------------ //
 int renderDetail =2; //should be 1-2 for points or 4+ for text
+boolean displayMode = false;
 
 //handlers for faces
 int setLim = 9; //number of image sets, max index+1
@@ -95,13 +96,17 @@ void draw () {
       if (!currentFace.mask[y][x]) {
         //OPTION 1 use points to create a mesh of the face
         //use lower renderDetail (more dots)
-        stroke(currentColor[y][x],255);
-        point(x, y, currentDepth[y][x]);
+        if(!displayMode){
+          stroke(currentColor[y][x],255);
+          point(x, y, currentDepth[y][x]);
+        }
         
         //OPTION 2 use text to cover the face
         //use higher renderDetail (less glyphs)
-        //fill(currentColor[y][x],255);
-        //text(getNextLetter(),x, y, currentDepth[y][x]);
+        else{
+          fill(currentColor[y][x],255);
+          text(getNextLetter(),x, y, currentDepth[y][x]);
+        }
       }
     }
   }
@@ -119,6 +124,9 @@ void keyPressed() {
         targetColor = faces[curSet].colors;
       }
     }
+  }
+  if(key == 'm' || key == 'M'){
+    displayMode = !displayMode;
   }
 }
 
@@ -171,4 +179,5 @@ char getNextLetter(){
   nextLetter++;
   return keywords.charAt((nextLetter-1)%keywords.length());
 }
+
 
