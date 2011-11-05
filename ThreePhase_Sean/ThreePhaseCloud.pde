@@ -45,6 +45,11 @@ class ThreePhaseCloud {
     phaseWrap();
     phaseUnwrap();
     makeDepth();
+    
+    //now that we are done with them, empty the image containers from memory
+  phase1Image = null;
+  phase2Image = null;
+  phase3Image = null;
   }
 
 

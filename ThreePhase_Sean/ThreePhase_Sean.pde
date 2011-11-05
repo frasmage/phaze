@@ -10,10 +10,16 @@
 import peasy.*;
 PeasyCam cam;
 
+
+// ------------------------------------------ //
+//                  GLOBAL VARS
+// ------------------------------------------ //
+int renderDetail =2; //should be 1-2 for points or 4+ for text
+
 //handlers for faces
 int setLim = 9; //number of image sets, max index+1
 ThreePhaseCloud[] faces = new ThreePhaseCloud[setLim]; //face Objects, contains 3d pixel clouds
-int curSet =0; //currently selected index
+int curSet =8; //currently selected index
 ThreePhaseCloud currentFace; //handler for currently selected object
 
 //holders for transition animation
@@ -25,10 +31,8 @@ color[][] targetColor;
 color[][] currentColor;
 color[][] pastColor;
 
-
-
 //array of predetermined values, should have setLim # of values, 
-//see kyle's version to guess and check good values for your set
+//see kyle's version to guess and check good values for your image sets
 float[] zscales = {108,32,88,98,98,180,120,48,108};
 float[] zskews = {28,49,28.5,35,35,34,27,30,26};
 float[] noises = {.01,.07,.1,.1,.1,.15,0,.03,0};
@@ -39,8 +43,10 @@ float[] noises = {.01,.07,.1,.1,.1,.15,0,.03,0};
 //where # is the set ID and 1,2,3 is the order of the images in sequence
 PImage phase1Image, phase2Image, phase3Image;
 
-
-int renderDetail =2;
+//text to be mapped
+String keywords = "Body, Mind, Soul, Inscription, Taboo, Culture, Values, Beliefs, Identity, Ideology, Control, Sublimation, Education, Extension, Cyborg, Technology, Evolution, Contours, Gender, Sexuality, Gaze, Growth, Performativity, Subversion, Acts, Construction, Regulation, Discourse, Discipline, Civilization, Power, Self, Other";
+int nextLetter = 0;
+PFont font;
 
 
 void setup() {
@@ -48,6 +54,8 @@ void setup() {
   
   //instantiate camera
   cam = new PeasyCam(this, width);
+  font = createFont("helvetica", 30);
+  textFont(font, 12);
   
   //instantiate facial clouds
   for(int i =0;i<faces.length;i++) {
@@ -62,16 +70,13 @@ void setup() {
   pastColor = targetColor = faces[curSet].colors; //set to default
   currentColor = faces[curSet].duplicateColorArray(); //make a new array which is duplicate of default
   
-  //now that we are done with them, empty the image containers from memory
-  phase1Image = null;
-  phase2Image = null;
-  phase3Image = null;
+  
 }
 
 void draw () {
   background(0);
   translate(-width / 2, -height / 2);
-  
+  nextLetter = 0;
   
   //display each pixel in the currently selected face.
   noFill();
@@ -88,9 +93,15 @@ void draw () {
       }
       
       if (!currentFace.mask[y][x]) {
-        //stroke(currentFace.colors[y][x], 255); //set stroke color
+        //OPTION 1 use points to create a mesh of the face
+        //use lower renderDetail (more dots)
         stroke(currentColor[y][x],255);
         point(x, y, currentDepth[y][x]);
+        
+        //OPTION 2 use text to cover the face
+        //use higher renderDetail (less glyphs)
+        //fill(currentColor[y][x],255);
+        //text(getNextLetter(),x, y, currentDepth[y][x]);
       }
     }
   }
@@ -111,7 +122,7 @@ void keyPressed() {
   }
 }
 
-
+//function returns color approach target
 color mergeColors(color current, color target){
   int tr = (target >> 16) & 0xFF;  // Faster way of getting red
   int tg = (target >> 8) & 0xFF;   // Faster way of getting green
@@ -148,3 +159,16 @@ color mergeColors(color current, color target){
   cg = cg <<8;
   return cr | cg | cb;    
 }
+
+//function returns the next character in the list of words.
+char getNextLetter(){
+  /*if(keywords.charAt(nextLetter%keywords.length()) == ','){
+    nextLetter++;
+  }
+  if (keywords.charAt(nextLetter%keywords.length()) == ' '){
+    nextLetter++;
+  }*/
+  nextLetter++;
+  return keywords.charAt((nextLetter-1)%keywords.length());
+}
+
