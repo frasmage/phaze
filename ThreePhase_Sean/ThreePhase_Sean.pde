@@ -52,7 +52,7 @@ PFont font;
 
 
 void setup() {
-  size(480, 720, PD);
+  size(480, 720, P3D);
   
   //instantiate camera
   cam = new PeasyCam(this, width);
@@ -187,7 +187,7 @@ char getNextLetter(boolean ignore){
     if (keywords.charAt(nextLetter%keywords.length()) == ' '){
       nextLetter++;
     }
-  }x  
+  }
   return keywords.charAt((nextLetter-1)%keywords.length());
 }
 
