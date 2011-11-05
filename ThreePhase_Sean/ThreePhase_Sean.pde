@@ -1,3 +1,5 @@
+
+
 /** PHASIAL FEATURES 
 <br />By Sean Fraser & Stephane Dufour
 <br />Based on ThreePhase & Structure Light 3D Scanning by Kyle McDonald
@@ -5,7 +7,6 @@
 <br />Kyle's article on Instructibles: http://www.instructables.com/id/Structured-Light-3D-Scanning/
 <br />Structured Light Utilities: http://code.google.com/p/structured-light/downloads/list
 */
-
 //Camera Manipulation library
 import peasy.*;
 PeasyCam cam;
@@ -51,7 +52,7 @@ PFont font;
 
 
 void setup() {
-  size(480, 720, P3D);
+  size(480, 720, PD);
   
   //instantiate camera
   cam = new PeasyCam(this, width);
@@ -105,7 +106,7 @@ void draw () {
         //use higher renderDetail (less glyphs)
         else{
           fill(currentColor[y][x],255);
-          text(getNextLetter(),x, y, currentDepth[y][x]);
+          text(getNextLetter(false),x, y, currentDepth[y][x]);
         }
       }
     }
@@ -126,11 +127,19 @@ void keyPressed() {
     }
   }
   if(key == 'm' || key == 'M'){
-    displayMode = !displayMode;
+    if(displayMode){
+      displayMode = false;
+      renderDetail = 2;
+    }else{
+      displayMode = true;
+      renderDetail = 5;
+    }
+    
   }
 }
 
 //function returns color approach target
+//
 color mergeColors(color current, color target){
   int tr = (target >> 16) & 0xFF;  // Faster way of getting red
   int tg = (target >> 8) & 0xFF;   // Faster way of getting green
@@ -142,7 +151,7 @@ color mergeColors(color current, color target){
   float valr = ((tr-cr)*speed);
   float valg = ((tg-cg)*speed);
   float valb = ((tb-cb)*speed);
-  //make sure are great enough to change 
+  //make sure are great enough to cause change 
   if(valr > 0 && valr < 1){
     valr = 1;
   }else if(valr < 0 && valr > -1){
@@ -169,14 +178,16 @@ color mergeColors(color current, color target){
 }
 
 //function returns the next character in the list of words.
-char getNextLetter(){
-  /*if(keywords.charAt(nextLetter%keywords.length()) == ','){
-    nextLetter++;
-  }
-  if (keywords.charAt(nextLetter%keywords.length()) == ' '){
-    nextLetter++;
-  }*/
+char getNextLetter(boolean ignore){
   nextLetter++;
+  if(ignore){ //ignore commas and spaces
+    if(keywords.charAt(nextLetter%keywords.length()) == ','){
+      nextLetter++;
+    }
+    if (keywords.charAt(nextLetter%keywords.length()) == ' '){
+      nextLetter++;
+    }
+  }x  
   return keywords.charAt((nextLetter-1)%keywords.length());
 }
 
