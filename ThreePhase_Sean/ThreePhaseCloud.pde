@@ -18,7 +18,6 @@ class ThreePhaseCloud {
   float[][] phase, distance, depth;
   boolean[][] mask, process;
   color[][] colors;
-  int[][] names;
 
   // ------------------------------------------ //
   //                  METHODS
@@ -40,7 +39,6 @@ class ThreePhaseCloud {
     mask = new boolean[inputHeight][inputWidth];
     process = new boolean[inputHeight][inputWidth];
     colors = new color[inputHeight][inputWidth];
-    names = new int[inputHeight][inputWidth];
     
     phaseWrap();
     phaseUnwrap();

@@ -1,11 +1,14 @@
+/** 
 
+ PHASIAL FEATURES 
 
-/** PHASIAL FEATURES 
-<br />By Sean Fraser & Stephane Dufour
-<br />Based on ThreePhase & Structure Light 3D Scanning by Kyle McDonald
-<br />Kyle's Original on OpenProcessing: http://www.openprocessing.org/visuals/?visualID=1995
-<br />Kyle's article on Instructibles: http://www.instructables.com/id/Structured-Light-3D-Scanning/
-<br />Structured Light Utilities: http://code.google.com/p/structured-light/downloads/list
+<br />
+<br /> By Sean Fraser & Stephane Dufour
+<br /> Based on ThreePhase & Structure Light 3D Scanning by Kyle McDonald
+<br /> Kyle's Original on OpenProcessing: http://www.openprocessing.org/visuals/?visualID=1995
+<br /> Kyle's article on Instructibles: http://www.instructables.com/id/Structured-Light-3D-Scanning/
+<br /> Structured Light Utilities: http://code.google.com/p/structured-light/downloads/list
+
 */
 //Camera Manipulation library
 import peasy.*;
@@ -15,23 +18,21 @@ PeasyCam cam;
 // ------------------------------------------ //
 //                  GLOBAL VARS
 // ------------------------------------------ //
-int renderDetail =2; //should be 1-2 for points or 4+ for text
-boolean displayMode = false;
+int renderDetail =5; //should be 1-2 for points or 4+ for text
+boolean displayMode = true; //false == points, true == text
 
 //handlers for faces
 int setLim = 9; //number of image sets, max index+1
 ThreePhaseCloud[] faces = new ThreePhaseCloud[setLim]; //face Objects, contains 3d pixel clouds
-int curSet =8; //currently selected index
+int curSet =6; //currently selected index
 ThreePhaseCloud currentFace; //handler for currently selected object
 
 //holders for transition animation
 float[][] targetDepth;
 float[][] currentDepth;
-float[][] pastDepth;
-float speed = .04;
 color[][] targetColor;
 color[][] currentColor;
-color[][] pastColor;
+float speed = .04; //rate of change per frame
 
 //array of predetermined values, should have setLim # of values, 
 //see kyle's version to guess and check good values for your image sets
@@ -53,11 +54,13 @@ PFont font;
 
 void setup() {
   size(480, 720, P3D);
-  
+  noSmooth();
   //instantiate camera
   cam = new PeasyCam(this, width);
   font = createFont("helvetica", 30);
   textFont(font, 12);
+  textAlign(CENTER);
+  textMode(MODEL);
   
   //instantiate facial clouds
   for(int i =0;i<faces.length;i++) {
@@ -65,11 +68,10 @@ void setup() {
   }
   currentFace = faces[curSet]; //set to default
   
-  //set global depth and color calculators to default
-  pastDepth = targetDepth = faces[curSet].depth; //set to default
-  currentDepth = new float[faces[curSet].inputHeight][faces[curSet].inputHeight];
+  //set global depth and color calculators to match default image
+  targetDepth = faces[curSet].depth; //set to default
   currentDepth = faces[curSet].duplicateDepthArray(); //make a new array which is duplicate of default
-  pastColor = targetColor = faces[curSet].colors; //set to default
+  targetColor = faces[curSet].colors; //set to default
   currentColor = faces[curSet].duplicateColorArray(); //make a new array which is duplicate of default
   
   
@@ -86,15 +88,15 @@ void draw () {
     for (int x = 0; x < currentFace.inputWidth; x += renderDetail){
       
       //move pixel depth towards target 
-      if(currentDepth[y][x] != targetDepth[y][x]){
+      if(currentDepth[y][x] != targetDepth[y][x]){ //if not already there
         currentDepth[y][x] += (targetDepth[y][x]-currentDepth[y][x])*speed;
       }
       //adjust pixel colors
-      if(currentColor[y][x] != targetColor[y][x]){
-        currentColor[y][x] = mergeColors(currentColor[y][x], targetColor[y][x]);
+      if(currentColor[y][x] != targetColor[y][x]){ //if not already there
+        currentColor[y][x] = mergeColors(currentColor[y][x], targetColor[y][x], speed);
       }
       
-      if (!currentFace.mask[y][x]) {
+      if (!currentFace.mask[y][x]) { //if not black pixel
         //OPTION 1 use points to create a mesh of the face
         //use lower renderDetail (more dots)
         if(!displayMode){
@@ -105,8 +107,12 @@ void draw () {
         //OPTION 2 use text to cover the face
         //use higher renderDetail (less glyphs)
         else{
+          pushMatrix();
+          //translate(x,y, currentDepth[y][x]);
+          translate(x,y,faces[curSet].depth[y][x]);
           fill(currentColor[y][x],255);
-          text(getNextLetter(false),x, y, currentDepth[y][x]);
+          text(getNextLetter(false),0,0,0);
+          popMatrix();
         }
       }
     }
@@ -123,6 +129,7 @@ void keyPressed() {
         currentFace = faces[curSet];
         targetDepth = faces[curSet].depth;
         targetColor = faces[curSet].colors;
+        break;
       }
     }
   }
@@ -138,20 +145,22 @@ void keyPressed() {
   }
 }
 
-//function returns color approach target
-//
-color mergeColors(color current, color target){
-  int tr = (target >> 16) & 0xFF;  // Faster way of getting red
-  int tg = (target >> 8) & 0xFF;   // Faster way of getting green
-  int tb = target & 0xFF;          // Faster way of getting blue
-  int cr = (current >> 16) & 0xFF;  // Faster way of getting red
-  int cg = (current >> 8) & 0xFF;   // Faster way of getting green
-  int cb = current & 0xFF;          // Faster way of getting blue
+//function returns color approaching target
+color mergeColors(color current, color target, float speed){
+  int tr = (target >> 16) & 0xFF;  // target red
+  int tg = (target >> 8) & 0xFF;   // target green
+  int tb = target & 0xFF;          // target blue
+  int cr = (current >> 16) & 0xFF;  // current red
+  int cg = (current >> 8) & 0xFF;   // current green
+  int cb = current & 0xFF;          // current blue
   
+  //calculate differences
   float valr = ((tr-cr)*speed);
   float valg = ((tg-cg)*speed);
   float valb = ((tb-cb)*speed);
-  //make sure are great enough to cause change 
+  
+  //make sure difference values are great enough to cause change
+  //bitwise leftshift will only accept ints 
   if(valr > 0 && valr < 1){
     valr = 1;
   }else if(valr < 0 && valr > -1){
@@ -167,6 +176,7 @@ color mergeColors(color current, color target){
   }else if(valb < 0 && valb > -1){
     valb = -1;
   }
+  //make change
   cr += int(valr); //adjsut red
   cg += int(valg); //adjust green
   cb += int(valb); //adjust blue
@@ -181,10 +191,8 @@ color mergeColors(color current, color target){
 char getNextLetter(boolean ignore){
   nextLetter++;
   if(ignore){ //ignore commas and spaces
-    if(keywords.charAt(nextLetter%keywords.length()) == ','){
-      nextLetter++;
-    }
-    if (keywords.charAt(nextLetter%keywords.length()) == ' '){
+    while(keywords.charAt(nextLetter%keywords.length()) == ',' || 
+      keywords.charAt(nextLetter%keywords.length()) == ' '){
       nextLetter++;
     }
   }
