@@ -18,8 +18,8 @@ PeasyCam cam;
 // ------------------------------------------ //
 //                  GLOBAL VARS
 // ------------------------------------------ //
-int renderDetail =5; //should be 1-2 for points or 4+ for text
-boolean displayMode = true; //false == points, true == text
+int renderDetail =2; //should be 1-2 for points or 4+ for text
+boolean displayMode = false; //false == points, true == text
 
 //handlers for faces
 int setLim = 9; //number of image sets, max index+1
@@ -177,9 +177,9 @@ color mergeColors(color current, color target, float speed){
     valb = -1;
   }
   //make change
-  cr += int(valr); //adjsut red
-  cg += int(valg); //adjust green
-  cb += int(valb); //adjust blue
+  cr +=(int) valr; //adjsut red
+  cg +=(int) valg; //adjust green
+  cb +=(int) valb; //adjust blue
   
   //store new values
   cr = cr <<16;
