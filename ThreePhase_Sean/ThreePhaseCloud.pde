@@ -180,9 +180,9 @@ class ThreePhaseCloud {
   }
 
   void makeDepth() {
-    for (int y = 0; y < inputHeight; y += renderDetail) {
+    for (int y = 0; y < inputHeight; y += 1) {
       float planephase = 0.5 - (y - (inputHeight / 2)) / zskew;
-      for (int x = 0; x < inputWidth; x += renderDetail)
+      for (int x = 0; x < inputWidth; x += 1)
         if (!mask[y][x])
           depth[y][x] = (phase[y][x] - planephase) * zscale;
     }
