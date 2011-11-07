@@ -7,3 +7,10 @@ Based on the Structure Light 3D Scanning and ThreePhase decoder by Kyle McDonald
 Kyle's Original on OpenProcessing: http://www.openprocessing.org/visuals/?visualID=1995
 Kyle's article on Instructibles: http://www.instructables.com/id/Structured-Light-3D-Scanning/
 Structured Light Utilities: http://code.google.com/p/structured-light/downloads/list
+
+
+Directory Map:
+StructureLight OSX - Code from google for viewing Structured light scans, for testing
+ThreePhase_Sean - Main directory for project. Contains all code implemented by Project Lead Sean Fraser
+ThreePhase_Stephane - Secondary directory for project. Contains all code being tested by Stephane Dufour
+ThreePhase_Kyle - original program by Kyle McDonald, used for testing and determining zscale and zskew values
