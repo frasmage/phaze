@@ -17,13 +17,15 @@ PeasyCam cam;
 // ------------------------------------------ //
 //                  GLOBAL VARS
 // ------------------------------------------ //
-int renderDetail =2; //should be 1-2 for points or 4+ for text
-boolean displayMode = false; //false == points, true == text
+int renderDetail; //should be 1-2 for points or 4+ for text
+int renderPoint = 2;
+int renderText =5;
+boolean displayMode = true; //false == points, true == text
 
 //handlers for faces
 int setLim = 9; //number of image sets, max index+1
 ThreePhaseCloud[] faces = new ThreePhaseCloud[setLim]; //face Objects, contains 3d pixel clouds
-int curSet =6; //currently selected index
+int curSet =8; //currently selected index
 ThreePhaseCloud currentFace; //handler for currently selected object
 
 //holders for transition animation
@@ -73,7 +75,11 @@ void setup() {
   targetColor = faces[curSet].colors; //set to default
   currentColor = faces[curSet].duplicateColorArray(); //make a new array which is duplicate of default
   
-  
+  if(displayMode){
+    renderDetail = renderText;
+  }else{
+    renderDetail = renderPoint;
+  }
 }
 
 void draw () {
