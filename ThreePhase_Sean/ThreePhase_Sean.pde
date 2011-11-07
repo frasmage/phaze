@@ -153,19 +153,28 @@ void keyPressed() {
 
 //function returns color approaching target
 color mergeColors(color current, color target, float speed){
-  int tr = (target >> 16) & 0xFF;  // target red
-  int tg = (target >> 8) & 0xFF;   // target green
-  int tb = target & 0xFF;          // target blue
+  int ta = (target >> 24) & 0xFF;   // target alpha
+  int tr = (target >> 16) & 0xFF;   // target red
+  int tg = (target >> 8) & 0xFF;    // target green
+  int tb = target & 0xFF;           // target blue
+  int ca = (current >> 24) & 0xFF;  // current alpha
   int cr = (current >> 16) & 0xFF;  // current red
   int cg = (current >> 8) & 0xFF;   // current green
   int cb = current & 0xFF;          // current blue
+  
   //calculate differences
+  float vala = ((ta-ca)*speed);
   float valr = ((tr-cr)*speed);
   float valg = ((tg-cg)*speed);
   float valb = ((tb-cb)*speed);
   
   //make sure difference values are great enough to cause change
   //bitwise leftshift will only accept ints 
+  if(vala > 0 && vala < 1){
+    vala = 1;
+  }else if(vala < 0 && vala > -1){
+    vala = -1;
+  }
   if(valr > 0 && valr < 1){
     valr = 1;
   }else if(valr < 0 && valr > -1){
@@ -182,15 +191,16 @@ color mergeColors(color current, color target, float speed){
     valb = -1;
   }
   //make change
+  ca +=(int) vala;
   cr +=(int) valr; //adjsut red
   cg +=(int) valg; //adjust green
   cb +=(int) valb; //adjust blue
   
   //store new values
-  int a = 255 << 24;
+  ca = ca << 24;
   cr = cr <<16;
   cg = cg <<8;
-  return a | cr | cg | cb;    
+  return ca | cr | cg | cb;    
 }
 
 //function returns the next character in the list of words.
