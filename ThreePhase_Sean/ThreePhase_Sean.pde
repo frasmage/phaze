@@ -159,40 +159,37 @@ color mergeColors(color current, color target, float speed){
   int cr = (current >> 16) & 0xFF;  // current red
   int cg = (current >> 8) & 0xFF;   // current green
   int cb = current & 0xFF;          // current blue
+  //calculate differences
+  float valr = ((tr-cr)*speed);
+  float valg = ((tg-cg)*speed);
+  float valb = ((tb-cb)*speed);
   
-  //if(tr != cr && tg != cg && tb != cb){
-    //calculate differences
-    float valr = ((tr-cr)*speed);
-    float valg = ((tg-cg)*speed);
-    float valb = ((tb-cb)*speed);
-    
-    //make sure difference values are great enough to cause change
-    //bitwise leftshift will only accept ints 
-    if(valr > 0 && valr < 1){
-      valr = 1;
-    }else if(valr < 0 && valr > -1){
-      valr = -1;
-    }
-    if(valg > 0 && valg < 1){
-      valg = 1;
-    }else if(valg < 0 && valg > -1){
-      valg = -1;
-    }
-    if(valb > 0 && valb < 1){
-      valb = 1;
-    }else if(valb < 0 && valb > -1){
-      valb = -1;
-    }
-    //make change
-    cr +=(int) valr; //adjsut red
-    cg +=(int) valg; //adjust green
-    cb +=(int) valb; //adjust blue
-    
-    //store new values
-    int a = 255 << 24;
-    cr = cr <<16;
-    cg = cg <<8;
-  //}
+  //make sure difference values are great enough to cause change
+  //bitwise leftshift will only accept ints 
+  if(valr > 0 && valr < 1){
+    valr = 1;
+  }else if(valr < 0 && valr > -1){
+    valr = -1;
+  }
+  if(valg > 0 && valg < 1){
+    valg = 1;
+  }else if(valg < 0 && valg > -1){
+    valg = -1;
+  }
+  if(valb > 0 && valb < 1){
+    valb = 1;
+  }else if(valb < 0 && valb > -1){
+    valb = -1;
+  }
+  //make change
+  cr +=(int) valr; //adjsut red
+  cg +=(int) valg; //adjust green
+  cb +=(int) valb; //adjust blue
+  
+  //store new values
+  int a = 255 << 24;
+  cr = cr <<16;
+  cg = cg <<8;
   return a | cr | cg | cb;    
 }
 
