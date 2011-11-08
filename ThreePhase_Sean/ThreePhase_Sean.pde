@@ -54,14 +54,14 @@ String twitterResponse;
 String displayText;
 int currTopic;
 int nextSwitchLetter = 0;
-int switchSpeed = 25;
+int switchSpeed = 30;
 int maxSwitchLength = int((480*720)/sq(renderText));
 int nextLetter = maxSwitchLength;
 PFont font;
 
 //Variables for camera animation
 float zDistance = 50;
-float yRotation = PI/3;
+float yRotation = PI/4;
 float yRotIncrement =.005;
 int rotDirection =1;
 
@@ -109,10 +109,10 @@ void draw () {
   //translate(-width / 2, -height / 2,zDistance);
   translate(0,0,zDistance);
   yRotation+=yRotIncrement*rotDirection;
-  if(yRotation>PI/3){
+  if(yRotation>PI/4){
     rotDirection = -1;
     nextFace();
-  }else if(yRotation < -PI/3){
+  }else if(yRotation < -PI/4){
     rotDirection = 1;
     nextFace();
   }
@@ -276,9 +276,15 @@ void nextFace(int nextSet){
 }
 
 void nextFace(){
-  curSet = int(random(setLim));
-  currentFace = faces[curSet];
-  targetDepth = faces[curSet].depth;
-  targetColor = faces[curSet].colors;
-  newTopic();
+  int nextSet =int(random(setLim));
+  if(curSet!=nextSet){ //if not the same face
+    curSet = nextSet;
+    currentFace = faces[curSet];
+    targetDepth = faces[curSet].depth;
+    targetColor = faces[curSet].colors;
+    newTopic();
+  }
+  else{ //try again
+    nextFace();
+  }
 }
