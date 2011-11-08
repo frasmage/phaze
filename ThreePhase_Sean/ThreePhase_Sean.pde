@@ -11,6 +11,10 @@
 
 */
 
+import processing.video.*;
+MovieMaker mm;
+int sceneCount = 0;
+
 // ------------------------------------------ //
 //                  GLOBAL VARS
 // ------------------------------------------ //
@@ -64,6 +68,7 @@ int rotDirection =1;
 
 void setup() {
   size(480, 720, P3D);
+  //hint(ENABLE_DEPTH_SORT);
   noSmooth();
   background(0);
   //font
@@ -84,7 +89,7 @@ void setup() {
   targetColor = faces[curSet].colors; //set to default
   currentColor = faces[curSet].duplicateColorArray(); //make a new array which is duplicate of default
   
-  //set default render values
+  //set default render values 
   if(displayMode){
     renderDetail = renderText;
   }else{
@@ -97,9 +102,11 @@ void setup() {
   newTopic(); //generate new twitter call
   displayText = twitterResponse;
     
+  mm = new MovieMaker(this, 480, 720, "skin.mov",30, MovieMaker.RAW, MovieMaker.LOSSLESS);
 }
 
 void draw () {
+    mm.addFrame();
   background(0);
   
   pushMatrix();
@@ -165,7 +172,6 @@ void draw () {
   textFont(font,30);
   text(keywords[currTopic],width/2,height-100,-20);
   popMatrix();
-  
 }
 
 void keyPressed() {
@@ -190,6 +196,9 @@ void keyPressed() {
       maxSwitchLength =int((480*720)/sq(renderDetail));
     }
     
+  }
+  if(key == 32){
+    mm.finish();
   }
 }
 

@@ -51,4 +51,8 @@ void newTopic(){
   nextSwitchLetter = 0;
   currTopic = int(random(keywords.length));
   queryTwitter(keywords[currTopic]);
+  sceneCount++;
+  if(sceneCount == 10){
+    mm.finish();
+  }
 }
