@@ -10,9 +10,6 @@
 <br /> Structured Light Utilities: http://code.google.com/p/structured-light/downloads/list
 
 */
-//Camera Manipulation library
-import peasy.*;
-PeasyCam cam;
 
 // ------------------------------------------ //
 //                  GLOBAL VARS
@@ -68,9 +65,9 @@ int rotDirection =1;
 void setup() {
   size(480, 720, P3D);
   noSmooth();
-  //instantiate camera
-  //cam = new PeasyCam(this, width);
-  font = createFont("helvetica", 30);
+  background(0);
+  //font
+  font = createFont("helvetica", 48);
   textFont(font, 12);
   textAlign(CENTER);
   textMode(MODEL);
@@ -99,11 +96,13 @@ void setup() {
   keywords = split(keywordList,", ");
   newTopic(); //generate new twitter call
   displayText = twitterResponse;
+    
 }
 
 void draw () {
   background(0);
   
+  pushMatrix();
   //process camera position
   rotateY(yRotation);
   //translate(-width / 2, -height / 2,zDistance);
@@ -117,14 +116,17 @@ void draw () {
     nextFace();
   }
   
-  
+  //update text
   if(displayMode){
     nextLetter = 0;
     switchLetters();
   }
   
+  
+  textFont(font, 12);
+  textAlign(CENTER);
+  textMode(MODEL);
   //display each pixel in the currently selected face.
-  noFill();
   for (int y = 0; y < currentFace.inputHeight; y += renderDetail){
     for (int x = 0; x < currentFace.inputWidth; x += renderDetail){
       
@@ -158,6 +160,12 @@ void draw () {
       }
     }
   }
+  
+  fill(255);
+  textFont(font,30);
+  text(keywords[currTopic],width/2,height-100,-20);
+  popMatrix();
+  
 }
 
 void keyPressed() {

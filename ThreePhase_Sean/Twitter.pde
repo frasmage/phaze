@@ -1,3 +1,5 @@
+/* Twitter4j Java Library */
+
 // twitter4j import and twitter connection -
 import twitter4j.conf.*;
 import twitter4j.internal.async.*;
@@ -49,5 +51,4 @@ void newTopic(){
   nextSwitchLetter = 0;
   currTopic = int(random(keywords.length));
   queryTwitter(keywords[currTopic]);
-  
 }
