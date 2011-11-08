@@ -47,17 +47,29 @@ float[] noises = {.01,.07,.1,.1,.1,.15,0,.03,0};
 //where # is the set ID and 1,2,3 is the order of the images in sequence
 PImage phase1Image, phase2Image, phase3Image;
 
-//text to be mapped
-String keywords = "Body, Mind, Soul, Inscription, Taboo, Culture, Values, Beliefs, Identity, Ideology, Control, Sublimation, Education, Extension, Cyborg, Technology, Evolution, Contours, Gender, Sexuality, Gaze, Growth, Performativity, Subversion, Acts, Construction, Regulation, Discourse, Discipline, Civilization, Power, Self, Other";
-int nextLetter = 0;
+//Variables for text animation
+String keywordList = "Body, Mind, Soul, Inscription, Taboo, Culture, Values, Beliefs, Identity, Ideology, Control, Sublimation, Education, Extension, Cyborg, Technology, Evolution, Contours, Gender, Sexuality, Gaze, Growth, Performativity, Subversion, Acts, Construction, Regulation, Discourse, Discipline, Civilization, Power, Self, Other";
+String[] keywords;
+String twitterResponse;
+String displayText;
+int currTopic;
+int nextSwitchLetter = 0;
+int switchSpeed = 25;
+int maxSwitchLength = int((480*720)/sq(renderText));
+int nextLetter = maxSwitchLength;
 PFont font;
 
+//Variables for camera animation
+float zDistance = 50;
+float yRotation = PI/3;
+float yRotIncrement =.005;
+int rotDirection =1;
 
 void setup() {
   size(480, 720, P3D);
   noSmooth();
   //instantiate camera
-  cam = new PeasyCam(this, width);
+  //cam = new PeasyCam(this, width);
   font = createFont("helvetica", 30);
   textFont(font, 12);
   textAlign(CENTER);
@@ -75,17 +87,41 @@ void setup() {
   targetColor = faces[curSet].colors; //set to default
   currentColor = faces[curSet].duplicateColorArray(); //make a new array which is duplicate of default
   
+  //set default render values
   if(displayMode){
     renderDetail = renderText;
   }else{
     renderDetail = renderPoint;
   }
+  
+  
+  //set up text
+  keywords = split(keywordList,", ");
+  newTopic(); //generate new twitter call
+  displayText = twitterResponse;
 }
 
 void draw () {
   background(0);
-  translate(-width / 2, -height / 2);
-  nextLetter = 0;
+  
+  //process camera position
+  rotateY(yRotation);
+  //translate(-width / 2, -height / 2,zDistance);
+  translate(0,0,zDistance);
+  yRotation+=yRotIncrement*rotDirection;
+  if(yRotation>PI/3){
+    rotDirection = -1;
+    nextFace();
+  }else if(yRotation < -PI/3){
+    rotDirection = 1;
+    nextFace();
+  }
+  
+  
+  if(displayMode){
+    nextLetter = 0;
+    switchLetters();
+  }
   
   //display each pixel in the currently selected face.
   noFill();
@@ -115,7 +151,6 @@ void draw () {
         else{
           pushMatrix();
           translate(x,y, currentDepth[y][x]);
-          //translate(x,y,faces[curSet].depth[y][x]);
           fill(currentColor[y][x],255);
           text(getNextLetter(false),0,0,0);
           popMatrix();
@@ -131,12 +166,10 @@ void keyPressed() {
     if(key == char(49+i)) {
       if(i!=curSet){
         //set current face to number key pressed
-        curSet = i;
-        currentFace = faces[curSet];
-        targetDepth = faces[curSet].depth;
-        targetColor = faces[curSet].colors;
+        nextFace(i);
         break;
       }
+      
     }
   }
   if(key == 'm' || key == 'M'){
@@ -146,6 +179,7 @@ void keyPressed() {
     }else{
       displayMode = true;
       renderDetail = 5;
+      maxSwitchLength =int((480*720)/sq(renderDetail));
     }
     
   }
@@ -207,12 +241,44 @@ color mergeColors(color current, color target, float speed){
 char getNextLetter(boolean ignore){
   nextLetter++;
   if(ignore){ //ignore commas and spaces
-    while(keywords.charAt(nextLetter%keywords.length()) == ',' || 
-      keywords.charAt(nextLetter%keywords.length()) == ' '){
+    while(displayText.charAt(nextLetter%displayText.length()) == ',' || 
+      displayText.charAt(nextLetter%displayText.length()) == ' '){
       nextLetter++;
     }
   }
-  return keywords.charAt((nextLetter-1)%keywords.length());
+  return displayText.charAt((nextLetter-1)%displayText.length());
 }
 
+void switchLetters(){
+  if(nextSwitchLetter+switchSpeed < maxSwitchLength){
+    for(int i = 0; i<switchSpeed;i++){
+      nextSwitchLetter++;
+      
+      if(displayText.charAt(nextSwitchLetter%displayText.length()) != twitterResponse.charAt(nextSwitchLetter%twitterResponse.length())){
+        displayText = replaceCharAt(displayText,twitterResponse.charAt(nextSwitchLetter%twitterResponse.length()),nextSwitchLetter%displayText.length());
+      }
+    }
+  }  
+}
 
+String replaceCharAt(String initial, char replacement, int position ) {        
+ StringBuffer  buffer = new StringBuffer(initial); // Word in which we replace        
+ buffer.setCharAt( position, replacement );    
+ return (buffer.toString());
+}
+
+void nextFace(int nextSet){
+  curSet = nextSet;
+  currentFace = faces[curSet];
+  targetDepth = faces[curSet].depth;
+  targetColor = faces[curSet].colors;
+  newTopic();
+}
+
+void nextFace(){
+  curSet = int(random(setLim));
+  currentFace = faces[curSet];
+  targetDepth = faces[curSet].depth;
+  targetColor = faces[curSet].colors;
+  newTopic();
+}
